@@ -1,0 +1,1 @@
+export { DefaultPrometheusFactory } from './DefaultPrometheusFactory';
