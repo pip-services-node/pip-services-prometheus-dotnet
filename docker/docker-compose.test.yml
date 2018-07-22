@@ -9,6 +9,11 @@ services:
     depends_on:
       - prometheus
       - pushgateway
+    environment:
+      - PROMETHEUS_SERVICE_HOST=prometheus
+      - PROMETHEUS_SERVICE_PORT=9090
+      - PUSHGATEWAY_SERVICE_HOST=pushgateway
+      - PUSHGATEWAY_SERVICE_PORT=9091
 
   prometheus:
     image: prom/prometheus:latest
