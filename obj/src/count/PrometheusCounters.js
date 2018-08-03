@@ -28,7 +28,7 @@ class PrometheusCounters extends pip_services_components_node_1.CachedCounters {
         if (contextInfo != null && this._instance == null)
             this._instance = contextInfo.contextId;
     }
-    isOpened() {
+    isOpen() {
         return this._opened;
     }
     open(correlationId, callback) {

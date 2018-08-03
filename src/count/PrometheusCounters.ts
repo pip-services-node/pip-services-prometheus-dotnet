@@ -46,7 +46,7 @@ export class PrometheusCounters extends CachedCounters implements IReferenceable
             this._instance = contextInfo.contextId;
     }
 
-    public isOpened(): boolean {
+    public isOpen(): boolean {
         return this._opened;
     }
 
