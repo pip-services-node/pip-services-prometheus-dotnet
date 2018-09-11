@@ -1,3 +1,5 @@
+/** @module count */
+/** @hidden */
 let _ = require('lodash');
 
 import { Counter } from 'pip-services-components-node';

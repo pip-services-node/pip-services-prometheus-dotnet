@@ -1,3 +1,5 @@
+/** @module count */
+/** @hidden */
 let os = require('os');
 
 import { ConfigParams } from 'pip-services-commons-node';

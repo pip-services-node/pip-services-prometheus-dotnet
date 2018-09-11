@@ -1,3 +1,4 @@
+/** @module services */
 import { Descriptor } from 'pip-services-commons-node';
 import { IReferences } from 'pip-services-commons-node';
 import { RestService } from 'pip-services-rpc-node';
