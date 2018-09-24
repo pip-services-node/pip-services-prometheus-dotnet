@@ -7,19 +7,17 @@ import { CounterType } from 'pip-services-components-node';
 import { StringConverter } from 'pip-services-commons-node';
 
 /**
- * Helper class that contains static methods for converting counters to a 
- * format with which Prometheus can work.
- * 
+ * Helper class that converts performance counter values into
+ * a response from Prometheus metrics service.
  */
 export class PrometheusCounterConverter {
 
-    //TODO
     /**
-     * Converts the given counters to a string, which can be sent later on to a REST-client
+     * Converts the given counters to a string that is returned by Prometheus metrics service.
      * 
-     * @param counters  the counters to convert.
-     * @param source    the name of the source from which data is being collected (e.g. job name).
-     * @param instance  the source instance's name/number.
+     * @param counters  a list of counters to convert.
+     * @param source    a source (context) name.
+     * @param instance  a unique instance name (usually a host name).
      */
     public static toString(counters: Counter[], source: string, instance: string): string {
         if (counters == null || counters.length == 0) return "";

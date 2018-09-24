@@ -1,9 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/** @module count */
+/** @hidden */
 let _ = require('lodash');
 const pip_services_components_node_1 = require("pip-services-components-node");
 const pip_services_commons_node_1 = require("pip-services-commons-node");
+/**
+ * Helper class that converts performance counter values into
+ * a response from Prometheus metrics service.
+ */
 class PrometheusCounterConverter {
+    /**
+     * Converts the given counters to a string that is returned by Prometheus metrics service.
+     *
+     * @param counters  a list of counters to convert.
+     * @param source    a source (context) name.
+     * @param instance  a unique instance name (usually a host name).
+     */
     static toString(counters, source, instance) {
         if (counters == null || counters.length == 0)
             return "";

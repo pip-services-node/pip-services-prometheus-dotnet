@@ -16,39 +16,55 @@ import { HttpConnectionResolver } from 'pip-services-rpc-node';
 import { PrometheusCounterConverter } from './PrometheusCounterConverter';
 
 /**
- * CachedCounters implementation that allows usage of Prometheus, which supports 
- * multi-dimensional data collection and querying.
+ * Performance counters that send their metrics to Prometheus service.
  * 
- * The Prometheus server is accessed using the connection URI (resolved by the 
- * connection resolver) and a request route (/metrics/job/<source>/instance/<instance>).
+ * The component is normally used in passive mode conjunction with [[PrometheusMetricsService]].
+ * Alternatively when connection parameters are set it can push metrics to Prometheus PushGateway.
  * 
  * ### Configuration parameters ###
  * 
- * Parameters to pass to the [[configure]] method for component configuration:
- * 
- * - "source" - the name of the source from which data is being collected (e.g. job name);
- * - "instance" - the source instance's name/number;
- * - "interval" - the update interval, which is used to dump the cache to memory at 
- * regular intervals (default is 300000);
- * - "reset_timeout" - the timeout for resetting the cache (default is 0, which 
- * turn off resetting);
- * - __connection(s)__
- *     - "connection.discovery_key" - the key to use for connection resolving in a discovery service;
- *     - "connection.protocol" - the connection's protocol;
- *     - "connection.host" - the target host;
- *     - "connection.port" - the target port;
- *     - "connection.uri" - the target URI.
+ * connection(s):           
+ *   discovery_key:         (optional) a key to retrieve the connection from [[IDiscovery]]
+ *   protocol:              connection protocol: http or https
+ *   host:                  host name or IP address
+ *   port:                  port number
+ *   uri:                   resource URI or connection string with all parameters in it
+ * options:
+ *   retries:               number of retries (default: 3)
+ *   connect_timeout:       connection timeout in milliseconds (default: 10 sec)
+ *   timeout:               invocation timeout in milliseconds (default: 10 sec)
  * 
  * ### References ###
  * 
- * A logger, connection resolver, and a context can be referenced by passing the 
- * following references to the object's [[setReferences]] method:
+ * - *:logger:*:*:1.0         (optional) ILogger components to pass log messages
+ * - *:counters:*:*:1.0         (optional) ICounters components to pass collected measurements
+ * - *:discovery:*:*:1.0        (optional) IDiscovery services to resolve connection
  * 
- * - logger: <code>"\*:logger:\*:\*:1.0"</code>;
- * - connection resolver's discovery service: <code>"\*:discovery:\*:\*:1.0"</code>;
- * - context-info: <code>"\*:context-info:\*:\*:1.0"</code>.
+ * @see [[RestService]]
+ * @see [[CommandableHttpService]]
  * 
- * @see [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/classes/count.cachedcounters.html CachedCounters]]
+ * ### Example ###
+ * 
+ * let counters = new PrometheusCounters();
+ * counters.configure(ConfigParams.fromTuples(
+ *     "connection.protocol", "http",
+ *     "connection.host", "localhost",
+ *     "connection.port", 8080
+ * ));
+ * 
+ * counters.open("123", (err) => {
+ *     ...
+ * });
+ * 
+ * counters.increment("mycomponent.mymethod.calls");
+ * let timing = counters.beginTiming("mycomponent.mymethod.exec_time");
+ * try {
+ *     ...
+ * } finally {
+ *     timing.endTiming();
+ * }
+ * 
+ * counters.dump();
  */
 export class PrometheusCounters extends CachedCounters implements IReferenceable, IOpenable {
     private _logger = new CompositeLogger();
@@ -60,32 +76,16 @@ export class PrometheusCounters extends CachedCounters implements IReferenceable
     private _requestRoute: string;
 
     /**
-     * Creates a new PrometheusCounters object.
+     * Creates a new instance of the performance counters.
      */
     public constructor() { 
         super();
     }
 
     /**
-     * Configures this component using the given configuration parameters.
+     * Configures component by passing configuration parameters.
      * 
-     * __Configuration parameters:__
-     * - "source" - the name of the source from which data is being collected (e.g. job name);
-     * - "instance" - the source instance's name/number;
-     * - "interval" - the update interval, which is used to dump the cache to memory at 
-     * regular intervals (default is 300000);
-     * - "reset_timeout" - the timeout for resetting the cache (default is 0, which 
-     * turn off resetting);
-     * - __connection(s)__
-     *     - "connection.discovery_key" - the key to use for connection resolving in a discovery service;
-     *     - "connection.protocol" - the connection's protocol;
-     *     - "connection.host" - the target host;
-     *     - "connection.port" - the target port;
-     *     - "connection.uri" - the target URI.
-     * 
-     * @param config    the configuration parameters to configure this component with.
-     * 
-     * @see [[https://rawgit.com/pip-services-node/pip-services-commons-node/master/doc/api/classes/config.configparams.html ConfigParams]] (in the PipServices "Commons" package)
+     * @param config    configuration parameters to be set.
      */
     public configure(config: ConfigParams): void {
         super.configure(config);
@@ -96,20 +96,9 @@ export class PrometheusCounters extends CachedCounters implements IReferenceable
     }
 
     /**
-     * Sets references to this component's logger, connection resolver, and context.
-     * 
-     * __References:__
-     * - logger: <code>"\*:logger:\*:\*:1.0"</code>;
-     * - connection resolver's discovery service: <code>"\*:discovery:\*:\*:1.0"</code>;
-     * - context-info: <code>"\*:context-info:\*:\*:1.0"</code>.
-     * 
-     * If a "source" and/or "instance" were not given during component configuration, then 
-     * the context-info's <code>name</code> and <code>contextID</code> will be used respectively.
-     * 
-     * @param references    an IReferences object, containing references to a logger, a context-info, 
-     *                      and a discovery service.
-     * 
-     * @see [[https://rawgit.com/pip-services-node/pip-services-commons-node/master/doc/api/interfaces/refer.ireferences.html IReferences]] (in the PipServices "Commons" package)
+	 * Sets references to dependent components.
+	 * 
+	 * @param references 	references to locate the component dependencies. 
      */
     public setReferences(references: IReferences): void {
         this._logger.setReferences(references);
@@ -124,19 +113,19 @@ export class PrometheusCounters extends CachedCounters implements IReferenceable
     }
 
     /**
-     * @returns     whether or not this component is currently open.
+	 * Checks if the component is opened.
+	 * 
+	 * @returns true if the component has been opened and false otherwise.
      */
     public isOpen(): boolean {
         return this._opened;
     }
 
     /**
-     * Opens this component by connecting to the resolved Prometheus server 
-     * and opening it as a REST-client. 
-     *      
-     * @param correlationId     unique business transaction id to trace calls across components.
-     * @param callback          the function to call once the logger has been opened.
-     *                          Will be called with an error, if one is raised.
+	 * Opens the component.
+	 * 
+	 * @param correlationId 	(optional) transaction id to trace execution through call chain.
+     * @param callback 			callback function that receives error or null no errors occured.
      */
     public open(correlationId: string, callback: (err: any) => void): void {
         if (this._opened) {
@@ -166,11 +155,10 @@ export class PrometheusCounters extends CachedCounters implements IReferenceable
     }
 
     /**
-     * Closes this component and releases the client that was opened earlier.
-     * 
-     * @param correlationId     unique business transaction id to trace calls across components.
-     * @param callback          the function to call once the component has been closed.
-     *                          Will be called with an error, if one is raised.
+	 * Closes component and frees used resources.
+	 * 
+	 * @param correlationId 	(optional) transaction id to trace execution through call chain.
+     * @param callback 			callback function that receives error or null no errors occured.
      */
     public close(correlationId: string, callback: (err: any) => void): void {
         this._opened = false;
@@ -181,9 +169,9 @@ export class PrometheusCounters extends CachedCounters implements IReferenceable
     }
 
     /**
-     * Saves this objects counters by pushing their metrics to Prometheus.
+     * Saves the current counters measurements.
      * 
-     * @param counters  the counters to save.
+     * @param counters      current counters measurements to be saves.
      */
     protected save(counters: Counter[]): void {
         if (this._client == null) return;

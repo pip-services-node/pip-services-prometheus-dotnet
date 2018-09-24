@@ -1,24 +1,90 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/** @module count */
+/** @hidden */
 let os = require('os');
 const pip_services_commons_node_1 = require("pip-services-commons-node");
 const pip_services_components_node_1 = require("pip-services-components-node");
 const pip_services_components_node_2 = require("pip-services-components-node");
 const pip_services_rpc_node_1 = require("pip-services-rpc-node");
 const PrometheusCounterConverter_1 = require("./PrometheusCounterConverter");
+/**
+ * Performance counters that send their metrics to Prometheus service.
+ *
+ * The component is normally used in passive mode conjunction with [[PrometheusMetricsService]].
+ * Alternatively when connection parameters are set it can push metrics to Prometheus PushGateway.
+ *
+ * ### Configuration parameters ###
+ *
+ * connection(s):
+ *   discovery_key:         (optional) a key to retrieve the connection from [[IDiscovery]]
+ *   protocol:              connection protocol: http or https
+ *   host:                  host name or IP address
+ *   port:                  port number
+ *   uri:                   resource URI or connection string with all parameters in it
+ * options:
+ *   retries:               number of retries (default: 3)
+ *   connect_timeout:       connection timeout in milliseconds (default: 10 sec)
+ *   timeout:               invocation timeout in milliseconds (default: 10 sec)
+ *
+ * ### References ###
+ *
+ * - *:logger:*:*:1.0         (optional) ILogger components to pass log messages
+ * - *:counters:*:*:1.0         (optional) ICounters components to pass collected measurements
+ * - *:discovery:*:*:1.0        (optional) IDiscovery services to resolve connection
+ *
+ * @see [[RestService]]
+ * @see [[CommandableHttpService]]
+ *
+ * ### Example ###
+ *
+ * let counters = new PrometheusCounters();
+ * counters.configure(ConfigParams.fromTuples(
+ *     "connection.protocol", "http",
+ *     "connection.host", "localhost",
+ *     "connection.port", 8080
+ * ));
+ *
+ * counters.open("123", (err) => {
+ *     ...
+ * });
+ *
+ * counters.increment("mycomponent.mymethod.calls");
+ * let timing = counters.beginTiming("mycomponent.mymethod.exec_time");
+ * try {
+ *     ...
+ * } finally {
+ *     timing.endTiming();
+ * }
+ *
+ * counters.dump();
+ */
 class PrometheusCounters extends pip_services_components_node_1.CachedCounters {
+    /**
+     * Creates a new instance of the performance counters.
+     */
     constructor() {
         super();
         this._logger = new pip_services_components_node_2.CompositeLogger();
         this._connectionResolver = new pip_services_rpc_node_1.HttpConnectionResolver();
         this._opened = false;
     }
+    /**
+     * Configures component by passing configuration parameters.
+     *
+     * @param config    configuration parameters to be set.
+     */
     configure(config) {
         super.configure(config);
         this._connectionResolver.configure(config);
         this._source = config.getAsStringWithDefault("source", this._source);
         this._instance = config.getAsStringWithDefault("instance", this._instance);
     }
+    /**
+     * Sets references to dependent components.
+     *
+     * @param references 	references to locate the component dependencies.
+     */
     setReferences(references) {
         this._logger.setReferences(references);
         this._connectionResolver.setReferences(references);
@@ -28,9 +94,20 @@ class PrometheusCounters extends pip_services_components_node_1.CachedCounters {
         if (contextInfo != null && this._instance == null)
             this._instance = contextInfo.contextId;
     }
+    /**
+     * Checks if the component is opened.
+     *
+     * @returns true if the component has been opened and false otherwise.
+     */
     isOpen() {
         return this._opened;
     }
+    /**
+     * Opens the component.
+     *
+     * @param correlationId 	(optional) transaction id to trace execution through call chain.
+     * @param callback 			callback function that receives error or null no errors occured.
+     */
     open(correlationId, callback) {
         if (this._opened) {
             if (callback)
@@ -55,6 +132,12 @@ class PrometheusCounters extends pip_services_components_node_1.CachedCounters {
                 callback(null);
         });
     }
+    /**
+     * Closes component and frees used resources.
+     *
+     * @param correlationId 	(optional) transaction id to trace execution through call chain.
+     * @param callback 			callback function that receives error or null no errors occured.
+     */
     close(correlationId, callback) {
         this._opened = false;
         this._client = null;
@@ -62,6 +145,11 @@ class PrometheusCounters extends pip_services_components_node_1.CachedCounters {
         if (callback)
             callback(null);
     }
+    /**
+     * Saves the current counters measurements.
+     *
+     * @param counters      current counters measurements to be saves.
+     */
     save(counters) {
         if (this._client == null)
             return;
