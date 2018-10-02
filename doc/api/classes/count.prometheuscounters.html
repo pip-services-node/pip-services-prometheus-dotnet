@@ -70,41 +70,59 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>CachedCounters implementation that allows usage of Prometheus, which supports
-						multi-dimensional data collection and querying.</p>
+						<p>Performance counters that send their metrics to Prometheus service.</p>
 					</div>
-					<p>The Prometheus server is accessed using the connection URI (resolved by the
-					connection resolver) and a request route (/metrics/job/<source>/instance/<instance>).</p>
+					<p>The component is normally used in passive mode conjunction with <a href="services.prometheusmetricsservice.html">PrometheusMetricsService</a>.
+					Alternatively when connection parameters are set it can push metrics to Prometheus PushGateway.</p>
 					<h3 id="configuration-parameters">Configuration parameters</h3>
-					<p>Parameters to pass to the <a href="count.prometheuscounters.html#configure">configure</a> method for component configuration:</p>
+					<p>connection(s):</p>
 					<ul>
-						<li>&quot;source&quot; - the name of the source from which data is being collected (e.g. job name);</li>
-						<li>&quot;instance&quot; - the source instance&#39;s name/number;</li>
-						<li>&quot;interval&quot; - the update interval, which is used to dump the cache to memory at
-						regular intervals (default is 300000);</li>
-						<li>&quot;reset_timeout&quot; - the timeout for resetting the cache (default is 0, which
-						turn off resetting);</li>
-						<li><strong>connection(s)</strong><ul>
-								<li>&quot;connection.discovery_key&quot; - the key to use for connection resolving in a discovery service;</li>
-								<li>&quot;connection.protocol&quot; - the connection&#39;s protocol;</li>
-								<li>&quot;connection.host&quot; - the target host;</li>
-								<li>&quot;connection.port&quot; - the target port;</li>
-								<li>&quot;connection.uri&quot; - the target URI.</li>
-							</ul>
-						</li>
+						<li>discovery_key:         (optional) a key to retrieve the connection from <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html" class="external">IDiscovery</a></li>
+						<li>protocol:              connection protocol: http or https</li>
+						<li>host:                  host name or IP address</li>
+						<li>port:                  port number</li>
+						<li>uri:                   resource URI or connection string with all parameters in it</li>
+					</ul>
+					<p>options:</p>
+					<ul>
+						<li>retries:               number of retries (default: 3)</li>
+						<li>connect_timeout:       connection timeout in milliseconds (default: 10 sec)</li>
+						<li>timeout:               invocation timeout in milliseconds (default: 10 sec)</li>
 					</ul>
 					<h3 id="references">References</h3>
-					<p>A logger, connection resolver, and a context can be referenced by passing the
-					following references to the object&#39;s <a href="count.prometheuscounters.html#setreferences">setReferences</a> method:</p>
 					<ul>
-						<li>logger: <code>&quot;*:logger:*:*:1.0&quot;</code>;</li>
-						<li>connection resolver&#39;s discovery service: <code>&quot;*:discovery:*:*:1.0&quot;</code>;</li>
-						<li>context-info: <code>&quot;*:context-info:*:*:1.0&quot;</code>.</li>
+						<li><code><em>:logger:</em>:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/log.ilogger.html" class="external">ILogger</a> components to pass log messages</li>
+						<li><code><em>:counters:</em>:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/count.icounters.html" class="external">ICounters</a> components to pass collected measurements</li>
+						<li><code><em>:discovery:</em>:*:1.0</code>        (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html" class="external">IDiscovery</a> services to resolve connection</li>
 					</ul>
 					<dl class="tsd-comment-tags">
 						<dt>see</dt>
-						<dd><p><a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/classes/count.cachedcounters.html" class="external">CachedCounters</a></p>
+						<dd><p><a href="https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/services.restservice.html" class="external">RestService</a></p>
 						</dd>
+						<dt>see</dt>
+						<dd><p><a href="https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/services.commandablehttpservice.html" class="external">CommandableHttpService</a></p>
+							<h3 id="example">Example</h3>
+							<pre><code>let <span class="hljs-keyword">counters</span> = new PrometheusCounters();
+<span class="hljs-keyword">counters</span>.configure(ConfigParams.<span class="hljs-keyword">from</span>Tuples(
+    <span class="hljs-string">"connection.protocol"</span>, <span class="hljs-string">"http"</span>,
+    <span class="hljs-string">"connection.host"</span>, <span class="hljs-string">"localhost"</span>,
+    <span class="hljs-string">"connection.port"</span>, <span class="hljs-number">8080</span>
+));
+
+<span class="hljs-keyword">counters</span>.open(<span class="hljs-string">"123"</span>, (err) =&gt; {
+    ...
+});
+
+<span class="hljs-keyword">counters</span>.increment(<span class="hljs-string">"mycomponent.mymethod.calls"</span>);
+let timing = <span class="hljs-keyword">counters</span>.beginTiming(<span class="hljs-string">"mycomponent.mymethod.exec_time"</span>);
+try {
+    ...
+} finally {
+    timing.endTiming();
+}
+
+<span class="hljs-keyword">counters</span>.dump();
+</code></pre></dd>
 					</dl>
 				</div>
 			</section>
@@ -195,12 +213,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/ed291e6/src/count/PrometheusCounters.ts#L60">count/PrometheusCounters.ts:60</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L77">count/PrometheusCounters.ts:77</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Creates a new PrometheusCounters object.</p>
+									<p>Creates a new instance of the performance counters.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="count.prometheuscounters.html" class="tsd-signature-type">PrometheusCounters</a></h4>
@@ -217,7 +235,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from CachedCounters._cache</p>
 						<ul>
-							<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:17</li>
+							<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:17</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -236,7 +254,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from CachedCounters._interval</p>
 						<ul>
-							<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:15</li>
+							<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:15</li>
 						</ul>
 					</aside>
 				</section>
@@ -247,7 +265,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from CachedCounters._lastDumpTime</p>
 						<ul>
-							<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:21</li>
+							<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:21</li>
 						</ul>
 					</aside>
 				</section>
@@ -258,7 +276,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from CachedCounters._lastResetTime</p>
 						<ul>
-							<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:22</li>
+							<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:22</li>
 						</ul>
 					</aside>
 				</section>
@@ -269,7 +287,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from CachedCounters._resetTimeout</p>
 						<ul>
-							<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:16</li>
+							<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:16</li>
 						</ul>
 					</aside>
 				</section>
@@ -280,7 +298,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from CachedCounters._updated</p>
 						<ul>
-							<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:20</li>
+							<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:20</li>
 						</ul>
 					</aside>
 				</section>
@@ -298,7 +316,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.CachedCounters</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:26</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:26</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -321,7 +339,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.beginTiming</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:74</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:74</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -359,7 +377,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.clear</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:61</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:61</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -391,7 +409,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.clearAll</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:65</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:65</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -413,12 +431,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/ed291e6/src/count/PrometheusCounters.ts#L175">count/PrometheusCounters.ts:175</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L164">count/PrometheusCounters.ts:164</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Closes this component and releases the client that was opened earlier.</p>
+									<p>Closes component and frees used resources.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -426,14 +444,13 @@
 								<li>
 									<h5>correlationId: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>unique business transaction id to trace calls across components.</p>
+										<p>(optional) transaction id to trace execution through call chain.</p>
 									</div>
 								</li>
 								<li>
 									<h5>callback: <span class="tsd-signature-type">function</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the function to call once the component has been closed.
-										Will be called with an error, if one is raised.</p>
+										<p>callback function that receives error or null no errors occured.</p>
 									</div>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-siganture">
@@ -470,42 +487,20 @@
 							<aside class="tsd-sources">
 								<p>Overrides CachedCounters.configure</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/ed291e6/src/count/PrometheusCounters.ts#L90">count/PrometheusCounters.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L91">count/PrometheusCounters.ts:91</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Configures this component using the given configuration parameters.</p>
+									<p>Configures component by passing configuration parameters.</p>
 								</div>
-								<p><strong>Configuration parameters:</strong></p>
-								<ul>
-									<li>&quot;source&quot; - the name of the source from which data is being collected (e.g. job name);</li>
-									<li>&quot;instance&quot; - the source instance&#39;s name/number;</li>
-									<li>&quot;interval&quot; - the update interval, which is used to dump the cache to memory at
-									regular intervals (default is 300000);</li>
-									<li>&quot;reset_timeout&quot; - the timeout for resetting the cache (default is 0, which
-									turn off resetting);</li>
-									<li><strong>connection(s)</strong><ul>
-											<li>&quot;connection.discovery_key&quot; - the key to use for connection resolving in a discovery service;</li>
-											<li>&quot;connection.protocol&quot; - the connection&#39;s protocol;</li>
-											<li>&quot;connection.host&quot; - the target host;</li>
-											<li>&quot;connection.port&quot; - the target port;</li>
-											<li>&quot;connection.uri&quot; - the target URI.</li>
-										</ul>
-									</li>
-								</ul>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="https://rawgit.com/pip-services-node/pip-services-commons-node/master/doc/api/classes/config.configparams.html" class="external">ConfigParams</a> (in the PipServices &quot;Commons&quot; package)</p>
-									</dd>
-								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>config: <span class="tsd-signature-type">ConfigParams</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the configuration parameters to configure this component with.</p>
+										<p>configuration parameters to be set.</p>
 									</div>
 								</li>
 							</ul>
@@ -524,7 +519,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.dump</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:81</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:81</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -553,7 +548,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.endTiming</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:123</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:123</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -596,7 +591,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.get</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:113</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:113</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -644,7 +639,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.getAll</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:98</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:98</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -670,7 +665,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.getInterval</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:31</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:31</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -692,7 +687,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.increment</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:187</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:187</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -739,7 +734,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.incrementOne</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:176</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:176</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -778,13 +773,16 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/ed291e6/src/count/PrometheusCounters.ts#L129">count/PrometheusCounters.ts:129</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L121">count/PrometheusCounters.ts:121</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the component is opened.</p>
+								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>whether or not this component is currently open.</p>
+							<p>true if the component has been opened and false otherwise.</p>
 						</li>
 					</ul>
 				</section>
@@ -799,7 +797,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.last</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:146</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:146</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -845,13 +843,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/ed291e6/src/count/PrometheusCounters.ts#L141">count/PrometheusCounters.ts:141</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L131">count/PrometheusCounters.ts:131</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Opens this component by connecting to the resolved Prometheus server
-									and opening it as a REST-client.</p>
+									<p>Opens the component.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -859,14 +856,13 @@
 								<li>
 									<h5>correlationId: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>unique business transaction id to trace calls across components.</p>
+										<p>(optional) transaction id to trace execution through call chain.</p>
 									</div>
 								</li>
 								<li>
 									<h5>callback: <span class="tsd-signature-type">function</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the function to call once the logger has been opened.
-										Will be called with an error, if one is raised.</p>
+										<p>callback function that receives error or null no errors occured.</p>
 									</div>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-siganture">
@@ -903,12 +899,12 @@
 							<aside class="tsd-sources">
 								<p>Overrides CachedCounters.save</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/ed291e6/src/count/PrometheusCounters.ts#L188">count/PrometheusCounters.ts:188</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L177">count/PrometheusCounters.ts:177</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Saves this objects counters by pushing their metrics to Prometheus.</p>
+									<p>Saves the current counters measurements.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -916,7 +912,7 @@
 								<li>
 									<h5>counters: <span class="tsd-signature-type">Counter</span><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the counters to save.</p>
+										<p>current counters measurements to be saves.</p>
 									</div>
 								</li>
 							</ul>
@@ -935,7 +931,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.setInterval</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:38</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:38</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -967,34 +963,20 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/ed291e6/src/count/PrometheusCounters.ts#L114">count/PrometheusCounters.ts:114</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L104">count/PrometheusCounters.ts:104</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Sets references to this component&#39;s logger, connection resolver, and context.</p>
+									<p>Sets references to dependent components.</p>
 								</div>
-								<p><strong>References:</strong></p>
-								<ul>
-									<li>logger: <code>&quot;*:logger:*:*:1.0&quot;</code>;</li>
-									<li>connection resolver&#39;s discovery service: <code>&quot;*:discovery:*:*:1.0&quot;</code>;</li>
-									<li>context-info: <code>&quot;*:context-info:*:*:1.0&quot;</code>.</li>
-								</ul>
-								<p>If a &quot;source&quot; and/or &quot;instance&quot; were not given during component configuration, then
-								the context-info&#39;s <code>name</code> and <code>contextID</code> will be used respectively.</p>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="https://rawgit.com/pip-services-node/pip-services-commons-node/master/doc/api/interfaces/refer.ireferences.html" class="external">IReferences</a> (in the PipServices &quot;Commons&quot; package)</p>
-									</dd>
-								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>references: <span class="tsd-signature-type">IReferences</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>an IReferences object, containing references to a logger, a context-info,
-										and a discovery service.</p>
+										<p>references to locate the component dependencies.</p>
 									</div>
 								</li>
 							</ul>
@@ -1013,7 +995,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.stats</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:135</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:135</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1061,7 +1043,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.timestamp</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:167</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:167</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1108,7 +1090,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.timestampNow</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:156</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:156</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1149,7 +1131,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from CachedCounters.update</p>
 								<ul>
-									<li>Defined in /Users/mac/PipServices/PipServices v3.0/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:88</li>
+									<li>Defined in D:/Work/Project/Node.js/documentation/pip-services-prometheus-node/node_modules/pip-services-components-node/obj/src/count/CachedCounters.d.ts:88</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

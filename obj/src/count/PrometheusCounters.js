@@ -17,47 +17,48 @@ const PrometheusCounterConverter_1 = require("./PrometheusCounterConverter");
  * ### Configuration parameters ###
  *
  * connection(s):
- *   discovery_key:         (optional) a key to retrieve the connection from [[IDiscovery]]
- *   protocol:              connection protocol: http or https
- *   host:                  host name or IP address
- *   port:                  port number
- *   uri:                   resource URI or connection string with all parameters in it
+ *   - discovery_key:         (optional) a key to retrieve the connection from [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html IDiscovery]]
+ *   - protocol:              connection protocol: http or https
+ *   - host:                  host name or IP address
+ *   - port:                  port number
+ *   - uri:                   resource URI or connection string with all parameters in it
+ *
  * options:
- *   retries:               number of retries (default: 3)
- *   connect_timeout:       connection timeout in milliseconds (default: 10 sec)
- *   timeout:               invocation timeout in milliseconds (default: 10 sec)
+ *   - retries:               number of retries (default: 3)
+ *   - connect_timeout:       connection timeout in milliseconds (default: 10 sec)
+ *   - timeout:               invocation timeout in milliseconds (default: 10 sec)
  *
  * ### References ###
  *
- * - *:logger:*:*:1.0         (optional) ILogger components to pass log messages
- * - *:counters:*:*:1.0         (optional) ICounters components to pass collected measurements
- * - *:discovery:*:*:1.0        (optional) IDiscovery services to resolve connection
+ * - <code>*:logger:*:*:1.0</code>         (optional) [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/log.ilogger.html ILogger]] components to pass log messages
+ * - <code>*:counters:*:*:1.0</code>         (optional) [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/count.icounters.html ICounters]] components to pass collected measurements
+ * - <code>*:discovery:*:*:1.0</code>        (optional) [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html IDiscovery]] services to resolve connection
  *
- * @see [[RestService]]
- * @see [[CommandableHttpService]]
+ * @see [[https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/services.restservice.html RestService]]
+ * @see [[https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/services.commandablehttpservice.html CommandableHttpService]]
  *
  * ### Example ###
  *
- * let counters = new PrometheusCounters();
- * counters.configure(ConfigParams.fromTuples(
- *     "connection.protocol", "http",
- *     "connection.host", "localhost",
- *     "connection.port", 8080
- * ));
+ *     let counters = new PrometheusCounters();
+ *     counters.configure(ConfigParams.fromTuples(
+ *         "connection.protocol", "http",
+ *         "connection.host", "localhost",
+ *         "connection.port", 8080
+ *     ));
  *
- * counters.open("123", (err) => {
- *     ...
- * });
+ *     counters.open("123", (err) => {
+ *         ...
+ *     });
  *
- * counters.increment("mycomponent.mymethod.calls");
- * let timing = counters.beginTiming("mycomponent.mymethod.exec_time");
- * try {
- *     ...
- * } finally {
- *     timing.endTiming();
- * }
+ *     counters.increment("mycomponent.mymethod.calls");
+ *     let timing = counters.beginTiming("mycomponent.mymethod.exec_time");
+ *     try {
+ *         ...
+ *     } finally {
+ *         timing.endTiming();
+ *     }
  *
- * counters.dump();
+ *     counters.dump();
  */
 class PrometheusCounters extends pip_services_components_node_1.CachedCounters {
     /**

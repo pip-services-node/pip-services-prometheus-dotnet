@@ -70,8 +70,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Helper class that contains static methods for converting counters to a
-						format with which Prometheus can work.</p>
+						<p>Helper class that converts performance counter values into
+						a response from Prometheus metrics service.</p>
 					</div>
 				</div>
 			</section>
@@ -108,12 +108,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/ed291e6/src/count/PrometheusCounterConverter.ts#L24">count/PrometheusCounterConverter.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounterConverter.ts#L22">count/PrometheusCounterConverter.ts:22</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Converts the given counters to a string, which can be sent later on to a REST-client</p>
+									<p>Converts the given counters to a string that is returned by Prometheus metrics service.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -121,19 +121,19 @@
 								<li>
 									<h5>counters: <span class="tsd-signature-type">Counter</span><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the counters to convert.</p>
+										<p>a list of counters to convert.</p>
 									</div>
 								</li>
 								<li>
 									<h5>source: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the name of the source from which data is being collected (e.g. job name).</p>
+										<p>a source (context) name.</p>
 									</div>
 								</li>
 								<li>
 									<h5>instance: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the source instance&#39;s name/number.</p>
+										<p>a unique instance name (usually a host name).</p>
 									</div>
 								</li>
 							</ul>
