@@ -70,29 +70,31 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Service that exposes &quot;/metrics&quot; route for Prometheus to scap performance metrics.</p>
+						<p>Service that exposes <code>&quot;/metrics&quot;</code> route for Prometheus to scap performance metrics.</p>
 					</div>
 					<h3 id="configuration-parameters">Configuration parameters</h3>
-					<p>dependencies:</p>
 					<ul>
-						<li>endpoint:              override for HTTP Endpoint dependency</li>
-						<li>prometheus-counters:   override for PrometheusCounters dependency</li>
-					</ul>
-					<p>connection(s):</p>
-					<ul>
-						<li>discovery_key:         (optional) a key to retrieve the connection from IDiscovery</li>
-						<li>protocol:              connection protocol: http or https</li>
-						<li>host:                  host name or IP address</li>
-						<li>port:                  port number</li>
-						<li>uri:                   resource URI or connection string with all parameters in it</li>
+						<li>dependencies:<ul>
+								<li>endpoint:              override for HTTP Endpoint dependency</li>
+								<li>prometheus-counters:   override for PrometheusCounters dependency</li>
+							</ul>
+						</li>
+						<li>connection(s):<ul>
+								<li>discovery_key:         (optional) a key to retrieve the connection from IDiscovery</li>
+								<li>protocol:              connection protocol: http or https</li>
+								<li>host:                  host name or IP address</li>
+								<li>port:                  port number</li>
+								<li>uri:                   resource URI or connection string with all parameters in it</li>
+							</ul>
+						</li>
 					</ul>
 					<h3 id="references">References</h3>
 					<ul>
-						<li><code><em>:logger:</em>:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/log.ilogger.html" class="external">ILogger</a> components to pass log messages</li>
-						<li><code><em>:counters:</em>:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/count.icounters.html" class="external">ICounters</a> components to pass collected measurements</li>
-						<li><code><em>:discovery:</em>:*:1.0</code>        (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html" class="external">IDiscovery</a> services to resolve connection</li>
-						<li><code><em>:endpoint:http:</em>:1.0</code>          (optional) <a href="https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/services.httpendpoint.html" class="external">HttpEndpoint</a> reference to expose REST operation</li>
-						<li><code><em>:counters:prometheus:</em>:1.0</code>    <a href="count.prometheuscounters.html">PrometheusCounters</a> reference to retrieve collected metrics</li>
+						<li><code>*:logger:*:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/log.ilogger.html" class="external">ILogger</a> components to pass log messages</li>
+						<li><code>*:counters:*:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/count.icounters.html" class="external">ICounters</a> components to pass collected measurements</li>
+						<li><code>*:discovery:*:*:1.0</code>        (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html" class="external">IDiscovery</a> services to resolve connection</li>
+						<li><code>*:endpoint:http:*:1.0</code>          (optional) <a href="https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/services.httpendpoint.html" class="external">HttpEndpoint</a> reference to expose REST operation</li>
+						<li><code>*:counters:prometheus:*:1.0</code>    <a href="count.prometheuscounters.html">PrometheusCounters</a> reference to retrieve collected metrics</li>
 					</ul>
 					<dl class="tsd-comment-tags">
 						<dt>see</dt>
@@ -191,7 +193,7 @@ service.open(<span class="hljs-string">"123"</span>, (err) =&gt; {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/services/PrometheusMetricsService.ts#L55">services/PrometheusMetricsService.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/services/PrometheusMetricsService.ts#L54">services/PrometheusMetricsService.ts:54</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -434,7 +436,7 @@ service.open(<span class="hljs-string">"123"</span>, (err) =&gt; {
 							<aside class="tsd-sources">
 								<p>Overrides RestService.register</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/services/PrometheusMetricsService.ts#L89">services/PrometheusMetricsService.ts:89</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/services/PrometheusMetricsService.ts#L88">services/PrometheusMetricsService.ts:88</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -685,7 +687,7 @@ service.open(<span class="hljs-string">"123"</span>, (err) =&gt; {
 							<aside class="tsd-sources">
 								<p>Overrides RestService.setReferences</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/services/PrometheusMetricsService.ts#L71">services/PrometheusMetricsService.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/services/PrometheusMetricsService.ts#L70">services/PrometheusMetricsService.ts:70</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

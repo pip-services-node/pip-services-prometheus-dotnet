@@ -1,15 +1,14 @@
 import { IReferences } from 'pip-services-commons-node';
 import { RestService } from 'pip-services-rpc-node';
 /**
- * Service that exposes "/metrics" route for Prometheus to scap performance metrics.
+ * Service that exposes <code>"/metrics"</code> route for Prometheus to scap performance metrics.
  *
  * ### Configuration parameters ###
  *
- * dependencies:
+ * - dependencies:
  *   - endpoint:              override for HTTP Endpoint dependency
  *   - prometheus-counters:   override for PrometheusCounters dependency
- *
- * connection(s):
+ * - connection(s):
  *   - discovery_key:         (optional) a key to retrieve the connection from IDiscovery
  *   - protocol:              connection protocol: http or https
  *   - host:                  host name or IP address
@@ -18,11 +17,11 @@ import { RestService } from 'pip-services-rpc-node';
  *
  * ### References ###
  *
- * - <code>*:logger:*:*:1.0</code>         (optional) [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/log.ilogger.html ILogger]] components to pass log messages
- * - <code>*:counters:*:*:1.0</code>         (optional) [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/count.icounters.html ICounters]] components to pass collected measurements
- * - <code>*:discovery:*:*:1.0</code>        (optional) [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html IDiscovery]] services to resolve connection
- * - <code>*:endpoint:http:*:1.0</code>          (optional) [[https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/services.httpendpoint.html HttpEndpoint]] reference to expose REST operation
- * - <code>*:counters:prometheus:*:1.0</code>    [[PrometheusCounters]] reference to retrieve collected metrics
+ * - <code>\*:logger:\*:\*:1.0</code>         (optional) [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/log.ilogger.html ILogger]] components to pass log messages
+ * - <code>\*:counters:\*:\*:1.0</code>         (optional) [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/count.icounters.html ICounters]] components to pass collected measurements
+ * - <code>\*:discovery:\*:\*:1.0</code>        (optional) [[https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html IDiscovery]] services to resolve connection
+ * - <code>\*:endpoint:http:\*:1.0</code>          (optional) [[https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/services.httpendpoint.html HttpEndpoint]] reference to expose REST operation
+ * - <code>\*:counters:prometheus:\*:1.0</code>    [[PrometheusCounters]] reference to retrieve collected metrics
  *
  * @see [[https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/services.restservice.html RestService]]
  * @see [[https://rawgit.com/pip-services-node/pip-services-rpc-node/master/doc/api/classes/clients.restclient.html RestClient]]

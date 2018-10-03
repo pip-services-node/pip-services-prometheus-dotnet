@@ -75,25 +75,27 @@
 					<p>The component is normally used in passive mode conjunction with <a href="services.prometheusmetricsservice.html">PrometheusMetricsService</a>.
 					Alternatively when connection parameters are set it can push metrics to Prometheus PushGateway.</p>
 					<h3 id="configuration-parameters">Configuration parameters</h3>
-					<p>connection(s):</p>
 					<ul>
-						<li>discovery_key:         (optional) a key to retrieve the connection from <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html" class="external">IDiscovery</a></li>
-						<li>protocol:              connection protocol: http or https</li>
-						<li>host:                  host name or IP address</li>
-						<li>port:                  port number</li>
-						<li>uri:                   resource URI or connection string with all parameters in it</li>
-					</ul>
-					<p>options:</p>
-					<ul>
-						<li>retries:               number of retries (default: 3)</li>
-						<li>connect_timeout:       connection timeout in milliseconds (default: 10 sec)</li>
-						<li>timeout:               invocation timeout in milliseconds (default: 10 sec)</li>
+						<li>connection(s):<ul>
+								<li>discovery_key:         (optional) a key to retrieve the connection from <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html" class="external">IDiscovery</a></li>
+								<li>protocol:              connection protocol: http or https</li>
+								<li>host:                  host name or IP address</li>
+								<li>port:                  port number</li>
+								<li>uri:                   resource URI or connection string with all parameters in it</li>
+							</ul>
+						</li>
+						<li>options:<ul>
+								<li>retries:               number of retries (default: 3)</li>
+								<li>connect_timeout:       connection timeout in milliseconds (default: 10 sec)</li>
+								<li>timeout:               invocation timeout in milliseconds (default: 10 sec)</li>
+							</ul>
+						</li>
 					</ul>
 					<h3 id="references">References</h3>
 					<ul>
-						<li><code><em>:logger:</em>:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/log.ilogger.html" class="external">ILogger</a> components to pass log messages</li>
-						<li><code><em>:counters:</em>:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/count.icounters.html" class="external">ICounters</a> components to pass collected measurements</li>
-						<li><code><em>:discovery:</em>:*:1.0</code>        (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html" class="external">IDiscovery</a> services to resolve connection</li>
+						<li><code>*:logger:*:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/log.ilogger.html" class="external">ILogger</a> components to pass log messages</li>
+						<li><code>*:counters:*:*:1.0</code>         (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/count.icounters.html" class="external">ICounters</a> components to pass collected measurements</li>
+						<li><code>*:discovery:*:*:1.0</code>        (optional) <a href="https://rawgit.com/pip-services-node/pip-services-components-node/master/doc/api/interfaces/connect.idiscovery.html" class="external">IDiscovery</a> services to resolve connection</li>
 					</ul>
 					<dl class="tsd-comment-tags">
 						<dt>see</dt>
@@ -213,7 +215,7 @@ try {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L77">count/PrometheusCounters.ts:77</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/count/PrometheusCounters.ts#L76">count/PrometheusCounters.ts:76</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -431,7 +433,7 @@ try {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L164">count/PrometheusCounters.ts:164</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/count/PrometheusCounters.ts#L163">count/PrometheusCounters.ts:163</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -487,7 +489,7 @@ try {
 							<aside class="tsd-sources">
 								<p>Overrides CachedCounters.configure</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L91">count/PrometheusCounters.ts:91</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/count/PrometheusCounters.ts#L90">count/PrometheusCounters.ts:90</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -773,7 +775,7 @@ try {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L121">count/PrometheusCounters.ts:121</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/count/PrometheusCounters.ts#L120">count/PrometheusCounters.ts:120</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -843,7 +845,7 @@ try {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L131">count/PrometheusCounters.ts:131</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/count/PrometheusCounters.ts#L130">count/PrometheusCounters.ts:130</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -899,7 +901,7 @@ try {
 							<aside class="tsd-sources">
 								<p>Overrides CachedCounters.save</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L177">count/PrometheusCounters.ts:177</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/count/PrometheusCounters.ts#L176">count/PrometheusCounters.ts:176</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -963,7 +965,7 @@ try {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/98942d9/src/count/PrometheusCounters.ts#L104">count/PrometheusCounters.ts:104</a></li>
+									<li>Defined in <a href="https://github.com/pip-services-node/pip-services-prometheus-node/blob/93320ec/src/count/PrometheusCounters.ts#L103">count/PrometheusCounters.ts:103</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
